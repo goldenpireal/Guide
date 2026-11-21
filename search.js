@@ -1,43 +1,45 @@
-window.onload = function () {
+document.addEventListener("DOMContentLoaded", () => {
+  const searchBar = document.querySelector(".searchbar");
+  if (!searchBar) return;
 
-    const searchBar = document.querySelector(".searchbar");
+  const suggestions = [
+    "Vectors",
+    "Mathematical Induction",
+    "Ionic Equilibrium",
+    "Euclid's Lemma",
+    "Matrices",
+    "Complex Numbers"
+  ];
 
-    const suggestions = [
-     "Vectors",
-     "Mathematical Induction",
-     "Ionic Equillibrium",
-     "Euclid's Lemma",
-     "Matrices",
-     "Complex Numbers",
-    ];
+  let textIndex = 0;
+  let charIndex = 0;
+  let deleting = false;
 
-    let textIndex = 0;
-    let charIndex = 0;
-
-    function typeText() {
-        const text = suggestions[textIndex];
-
-        if (charIndex <= text.length) {
-            searchBar.placeholder = text.substring(0, charIndex);
-            charIndex++;
-            setTimeout(typeText, 100);
-        } else {
-            setTimeout(deleteText, 1500);
-        }
+  const typeNext = () => {
+    // Do not overwrite text while the visitor is actively searching.
+    if (document.activeElement === searchBar || searchBar.value.length > 0) {
+      window.setTimeout(typeNext, 500);
+      return;
     }
 
-    function deleteText() {
-        const text = suggestions[textIndex];
+    const current = suggestions[textIndex];
+    searchBar.placeholder = current.slice(0, charIndex);
 
-        if (charIndex >= 0) {
-            searchBar.placeholder = text.substring(0, charIndex);
-            charIndex--;
-            setTimeout(deleteText, 50);
-        } else {
-            textIndex = (textIndex + 1) % suggestions.length;
-            setTimeout(typeText, 300);
-        }
+    if (!deleting && charIndex < current.length) {
+      charIndex += 1;
+      window.setTimeout(typeNext, 85);
+    } else if (!deleting) {
+      deleting = true;
+      window.setTimeout(typeNext, 1350);
+    } else if (charIndex > 0) {
+      charIndex -= 1;
+      window.setTimeout(typeNext, 38);
+    } else {
+      deleting = false;
+      textIndex = (textIndex + 1) % suggestions.length;
+      window.setTimeout(typeNext, 280);
     }
+  };
 
-    typeText();
-};
+  typeNext();
+});
